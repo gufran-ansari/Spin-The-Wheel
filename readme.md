@@ -1,7 +1,7 @@
 # Spin The Wheel
 
 ## Version
-`v1.2.0`
+`v1.3.0`
 
 ## Project Overview
 This project is a WordPress-based "Spin & Win" campaign system with:
@@ -75,6 +75,15 @@ File: `Spin Wheel Frontend JS & CSS.html`
 3. Keep latest version at the top of the history.
 
 ## Version History
+- `v1.3.0` (2026-03-08)
+  - Rebuilt frontend UI to match the new premium design system (wheel stage, modern form card, live badge)
+  - Added result modal popup flow with win/loss states and dismiss/reset behavior
+  - Added custom form validation messaging and updated error placement below the action button
+  - Updated consent row styling (smaller checkbox, centered alignment) and improved input affordance with visible light borders
+  - Simplified wheel to a 2-layer visual structure and refined clacker positioning on the right edge across breakpoints
+  - Preserved backend integration and AJAX contract (`action=spin_wheel`, same field keys, same endpoints)
+  - Preserved current wheel image assets (`red.webp`, `green.webp`, `blue.webp`, `gray.webp`)
+
 - `v1.2.0` (2026-03-08)
   - Revamped frontend UI styling and form layout for improved visual hierarchy
   - Updated desktop/mobile responsive sizing behavior for wheel and form
