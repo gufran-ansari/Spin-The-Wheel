@@ -91,9 +91,9 @@
   .spin-wheel-clacker {
     position: absolute;
     top: 50%;
-    left: 0;
-    right: auto;
-    transform: translate(-100%, -50%);
+    right: 0;
+    left: auto;
+    transform: translate(100%, -50%) rotate(180deg);
     z-index: 40;
     display: flex;
     align-items: center;
@@ -723,15 +723,15 @@
     }
 
     .spin-wheel-clacker {
-      left: 0;
-      right: auto;
+      right: 0;
+      left: auto;
     }
   }
 
   @media (max-width: 560px) {
     .spin-wheel-clacker {
-      left: 0;
-      right: auto;
+      right: 0;
+      left: auto;
     }
 
     .spin-wheel-clacker-tip {
