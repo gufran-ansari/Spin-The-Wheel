@@ -2,12 +2,13 @@
   @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Sora:wght@600;700;800&display=swap");
 
   :root {
-    --spin-text: #1f2937;
-    --spin-card-bg: rgba(88, 24, 19, 0.94);
-    --spin-card-border: rgba(255, 255, 255, 0.25);
-    --spin-accent: #ffbe0b;
-    --spin-accent-strong: #ff9f1a;
-    --spin-btn-disabled: #b4aca6;
+    --spin-bg: #fcfcfd;
+    --spin-text: #0f172a;
+    --spin-muted: #64748b;
+    --spin-input-bg: #f8fafc;
+    --spin-input-border: #e2e8f0;
+    --spin-card-border: #f1f5f9;
+    --spin-highlight: #facc15;
     --spin-wheel-size-desktop: 600px;
     --spin-form-width-desktop: 550px;
     --spin-desktop-gap: 2rem;
@@ -27,21 +28,10 @@
   body {
     font-family: "Manrope", sans-serif;
     color: var(--spin-text);
-    background:
-      radial-gradient(
-        circle at 15% 10%,
-        rgba(255, 196, 129, 0.35),
-        transparent 35%
-      ),
-      radial-gradient(
-        circle at 85% 90%,
-        rgba(255, 132, 121, 0.24),
-        transparent 30%
-      ),
-      linear-gradient(140deg, #fff8ec 0%, #ffe8d8 45%, #ffd8d1 100%);
+    background: var(--spin-bg);
+    overflow-x: hidden;
   }
 
-  /* Elementor fixes */
   .elementor-section {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
@@ -49,106 +39,142 @@
 
   .elementor-shortcode,
   .elementor-widget-container {
-    display: flex;
-    justify-content: center;
     width: 100%;
   }
 
   #spin-wheel-app {
+    position: relative;
     width: 100vw;
     max-width: 100vw;
+    min-height: 100vh;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
-    height: 100vh;
-    max-height: 100vh;
-    padding: clamp(0.75rem, 1.2vw, 1.25rem);
-    display: grid;
-    grid-template-columns: var(--spin-wheel-size-desktop) var(
-        --spin-form-width-desktop
-      );
+    padding: 1rem;
+    box-sizing: border-box;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--spin-desktop-gap);
-    position: relative;
-    box-sizing: border-box;
     overflow: hidden;
+    background: var(--spin-bg);
+  }
+
+  .spin-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .spin-shell {
+    position: relative;
+    z-index: 1;
+    width: min(1280px, 100%);
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2.25rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spin-wheel-column,
+  .spin-form-column {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .spin-wheel-stage {
+    position: relative;
+  }
+
+  .spin-wheel-ring {
+    position: absolute;
+    inset: -24px;
+    border-radius: 999px;
+    border: 12px solid #fff;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+    z-index: -1;
+  }
+
+  .spin-wheel-clacker {
+    position: absolute;
+    top: 50%;
+    right: -24px;
+    transform: translateY(-50%) rotate(180deg);
+    z-index: 40;
+    display: flex;
+    align-items: center;
+  }
+
+  .spin-wheel-clacker-tip {
+    width: 48px;
+    height: 40px;
+    background: #0f172a;
+    clip-path: polygon(100% 50%, 0 0, 0 100%);
+    border-top: 2px solid #334155;
+    border-bottom: 2px solid #334155;
+    border-left: 2px solid #334155;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.3);
+  }
+
+  .spin-wheel-clacker-dot {
+    position: absolute;
+    right: -8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: #eab308;
+    border: 2px solid #fff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
   }
 
   .spin-wheel-container {
     position: relative;
-    width: var(--spin-wheel-size-desktop);
-    height: var(--spin-wheel-size-desktop);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    filter: drop-shadow(0 24px 40px rgba(71, 31, 22, 0.35));
-    isolation: isolate;
-    animation: spin-wheel-rise 0.7s ease both;
+    width: min(84vw, var(--spin-wheel-size-desktop));
+    height: min(84vw, var(--spin-wheel-size-desktop));
+    border-radius: 50%;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 28px 50px -20px rgba(15, 23, 42, 0.25);
+    box-sizing: border-box;
   }
 
   .wheel-glow {
     position: absolute;
-    inset: 10%;
+    inset: -10px;
     border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      rgba(255, 226, 140, 0.52),
-      rgba(255, 226, 140, 0)
-    );
+    background: radial-gradient(circle, rgba(250, 204, 21, 0.35), rgba(250, 204, 21, 0));
     z-index: 0;
-    animation: spin-wheel-breathe 3.8s ease-in-out infinite;
+    pointer-events: none;
   }
 
   .gold-ring {
     position: absolute;
-    inset: 0;
+    inset: 8px;
     border-radius: 50%;
-    background: linear-gradient(
-      140deg,
-      #fdf4a8 0%,
-      #f6cd75 22%,
-      #dc9f3f 50%,
-      #f8d372 75%,
-      #bb7d28 100%
-    );
-    box-shadow:
-      0 0 14px rgba(255, 209, 125, 0.95),
-      0 0 40px rgba(230, 161, 61, 0.6),
-      inset 0 0 12px rgba(255, 255, 255, 0.55);
+    background: linear-gradient(145deg, #fef08a 0%, #fbbf24 35%, #f59e0b 100%);
+    box-shadow: 0 0 22px rgba(251, 191, 36, 0.4);
     z-index: 1;
   }
 
   #spin-wheel-wheel {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
     z-index: 2;
   }
 
   #spin-wheel-image {
     position: absolute;
-    inset: 18px;
+    inset: 14px;
     border-radius: 50%;
     overflow: hidden;
-    z-index: 2;
     transform-origin: 50% 50%;
     will-change: transform;
     transition: none;
-    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4);
-  }
-
-  #spin-wheel-image::after {
-    content: "";
-    position: absolute;
-    inset: 45.5%;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #fff6c4, #cc8f34);
-    z-index: 6;
-    box-shadow:
-      0 4px 14px rgba(0, 0, 0, 0.35),
-      inset 0 2px 5px rgba(255, 255, 255, 0.45);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
   }
 
   .wheel-segment {
@@ -180,25 +206,25 @@
     position: absolute;
     top: 50%;
     left: 79%;
-    width: 165px;
+    width: 150px;
     transform: translate(-50%, -50%);
-    color: #fff;
+    color: #ffffff;
     font-family: "Sora", sans-serif;
-    font-weight: 700;
-    font-size: 17px;
-    line-height: 1.24;
+    font-weight: 800;
+    font-size: clamp(0.85rem, 1.45vw, 1.35rem);
+    line-height: 1.12;
     text-align: center;
-    letter-spacing: 0.03em;
     text-transform: uppercase;
+    letter-spacing: 0.02em;
     text-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.6),
-      0 0 10px rgba(0, 0, 0, 0.35);
+      0 2px 4px rgba(0, 0, 0, 0.5),
+      0 0 8px rgba(0, 0, 0, 0.35);
     pointer-events: none;
     white-space: nowrap;
   }
 
   .seg-0 .segment-text {
-    transform: translate(-50%, -71%) rotate(0deg);
+    transform: translate(-50%, -70%) rotate(0deg);
   }
 
   .seg-1 .segment-text {
@@ -206,422 +232,569 @@
   }
 
   .seg-2 .segment-text {
-    transform: translate(-50%, -29%) rotate(0deg);
+    transform: translate(-50%, -30%) rotate(0deg);
   }
 
   .seg-3 .segment-text {
     transform: translate(-50%, -50%) rotate(0deg);
   }
 
-  .wheel-pointer {
+  .spin-wheel-center-cap {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 50px;
-    height: 50px;
     transform: translate(-50%, -50%);
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  .wheel-pointer::before {
-    content: "";
-    position: absolute;
-    inset: 0;
+    width: clamp(74px, 9vw, 128px);
+    height: clamp(74px, 9vw, 128px);
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #fff8ca, #d28f32);
-    box-shadow:
-      0 4px 9px rgba(0, 0, 0, 0.4),
-      inset 0 2px 5px rgba(255, 255, 255, 0.62);
-    z-index: 2;
+    background: #ffffff;
+    border: 8px solid #f8fafc;
+    box-shadow: 0 20px 34px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 12;
   }
 
-  .pointer-arm {
+  .spin-wheel-center-cap .spin-icon-crown {
+    width: clamp(22px, 2.4vw, 34px);
+    height: clamp(22px, 2.4vw, 34px);
+    color: #eab308;
+    margin-bottom: 2px;
+  }
+
+  .spin-wheel-center-cap span {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+
+  .spin-wheel-stand-shadow {
     position: absolute;
-    top: 50%;
-    left: 55%;
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-top: 14px solid transparent;
-    border-bottom: 14px solid transparent;
-    border-left: 48px solid #efb559;
-    filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.32));
-    z-index: 1;
+    left: 50%;
+    bottom: -38px;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 40px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.1);
+    filter: blur(26px);
   }
 
-  .spin-wheel-form {
-    background: linear-gradient(
-      145deg,
-      rgba(133, 26, 18, 0.95) 0%,
-      rgba(70, 8, 7, 0.92) 100%
-    );
-    border: 1px solid var(--spin-card-border);
-    border-radius: 24px;
-    padding: clamp(1.5rem, 3vw, 2.8rem);
+  .spin-form-column {
     width: min(100%, var(--spin-form-width-desktop));
-    max-width: var(--spin-form-width-desktop);
-    color: #fff8f1;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 24px 45px rgba(42, 10, 7, 0.45);
-    animation: spin-wheel-rise 0.8s ease both;
-    animation-delay: 0.08s;
   }
 
-  .spin-wheel-form::before {
-    content: "";
+  .spin-wheel-form-card {
+    position: relative;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid var(--spin-card-border);
+    border-radius: 3rem;
+    padding: 2rem 1.4rem;
+    box-sizing: border-box;
+    box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.08);
+  }
+
+  .spin-live-badge {
     position: absolute;
-    width: 220px;
-    height: 220px;
-    right: -90px;
-    top: -100px;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      rgba(255, 205, 112, 0.35),
-      rgba(255, 205, 112, 0)
-    );
-    pointer-events: none;
+    top: -16px;
+    right: -10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #facc15;
+    color: #0f172a;
+    font-weight: 900;
+    font-size: 0.83rem;
+    padding: 0.64rem 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transform: rotate(12deg);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .spin-live-badge .spin-icon {
+    width: 18px;
+    height: 18px;
   }
 
   .spin-form-header {
-    position: relative;
-    z-index: 1;
-    margin-bottom: 1.15rem;
+    margin-bottom: 2rem;
   }
 
   .spin-kicker {
-    margin: 0;
-    font-family: "Sora", sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: #ffd966;
+    color: #94a3b8;
   }
 
   .spin-title {
-    margin: 0.35rem 0 0.6rem;
+    margin: 0 0 0.8rem;
     font-family: "Sora", sans-serif;
-    font-size: clamp(1.65rem, 3vw, 2.25rem);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: 0.01em;
-    color: #fff9ed;
+    font-size: clamp(2rem, 5.2vw, 3.35rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: #0f172a;
   }
 
   .spin-subtitle {
     margin: 0;
-    font-size: 0.92rem;
+    color: #64748b;
+    font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+    font-weight: 500;
     line-height: 1.6;
-    color: rgba(255, 247, 238, 0.88);
+  }
+
+  .spin-form-error {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0.8rem 0 0;
+    padding: 0.9rem 1rem;
+    border-left: 4px solid #ef4444;
+    border-radius: 0 0.9rem 0.9rem 0;
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+
+  .spin-form-error[hidden] {
+    display: none !important;
+  }
+
+  .spin-form-error .spin-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+  }
+
+  .spin-form-error p {
+    margin: 0;
+    font-size: 0.83rem;
+    font-weight: 700;
+    line-height: 1.4;
   }
 
   #spin-wheel-form {
     display: flex;
     flex-direction: column;
-    gap: 0.9rem;
+    gap: 1rem;
+  }
+
+  .spin-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .spin-field-group > label {
+    margin-left: 4px;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+
+  .spin-input-wrap {
     position: relative;
-    z-index: 1;
+  }
+
+  .spin-input-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    color: #cbd5e1;
+    transition: color 0.2s ease;
+    pointer-events: none;
   }
 
   #spin-wheel-form input {
     width: 100%;
     height: 58px;
-    padding: 0 1rem;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 14px;
-    border: 1px solid transparent;
-    background: rgba(255, 255, 255, 0.95);
-    color: #2d2d2d;
+    border: 2px solid var(--spin-input-border);
+    border-radius: 1rem;
+    padding: 0 1rem 0 3rem;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #0f172a;
+    background: var(--spin-input-bg);
+    box-sizing: border-box;
     transition:
       border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      transform 0.2s ease;
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   #spin-wheel-form input::placeholder {
-    color: #7b7b7b;
-    font-weight: 500;
+    color: #94a3b8;
+  }
+
+  #spin-wheel-form input:hover {
+    border-color: #cbd5e1;
   }
 
   #spin-wheel-form input:focus {
     outline: none;
-    border-color: #fbbf24;
-    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.22);
-    transform: translateY(-1px);
+    background: #ffffff;
+    border-color: #facc15;
+    box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
   }
 
-  #spin-wheel-form input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    margin: 3px 0 0;
-    padding: 0;
-    accent-color: #fbbf24;
-    flex: 0 0 auto;
-    border-radius: 4px;
+  .spin-input-wrap:focus-within .spin-input-icon {
+    color: #eab308;
   }
 
-  .spin-wheel-consent {
+  .spin-grid-two {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .spin-agree-row {
     display: flex;
-    gap: 11px;
-    align-items: flex-start;
-    font-size: 12px;
-    margin: 0.2rem 0 0.15rem;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0.3rem 0 0.1rem;
   }
 
-  .spin-wheel-consent span {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: rgba(255, 247, 238, 0.92);
-    line-height: 1.5;
+  .spin-agree-row input[type="checkbox"] {
+    width: 3%;
+    min-width: 14px;
+    max-width: 18px;
+    aspect-ratio: 1 / 1;
+    margin-top: 0;
+    border-radius: 0.5rem;
+    border: 2px solid #cbd5e1;
+    accent-color: #eab308;
+    cursor: pointer;
+    flex: 0 0 auto;
   }
 
-  .spin-wheel-consent a {
-    color: #ffe082;
-    font-weight: 700;
+  .spin-agree-row span {
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  .spin-agree-row a {
+    color: #0f172a;
     text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
+    font-weight: 800;
   }
 
   #spin-wheel-btn {
     width: 100%;
-    height: 58px;
+    min-height: 68px;
     border: none;
-    border-radius: 14px;
+    border-radius: 1.4rem;
+    background: #0f172a;
+    color: #ffffff;
     font-family: "Sora", sans-serif;
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: 0.13em;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: -0.01em;
     text-transform: uppercase;
-    background: linear-gradient(
-      110deg,
-      var(--spin-accent) 0%,
-      var(--spin-accent-strong) 100%
-    );
-    color: #2c1700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
     cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    box-shadow:
-      0 14px 24px rgba(0, 0, 0, 0.24),
-      inset 0 -2px 0 rgba(120, 64, 0, 0.25);
+    box-shadow: 0 20px 30px -18px rgba(15, 23, 42, 0.6);
     transition:
-      transform 0.2s ease,
+      transform 0.15s ease,
+      background-color 0.2s ease,
       box-shadow 0.2s ease,
-      filter 0.2s ease;
+      color 0.2s ease;
   }
 
-  #spin-wheel-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.58),
-      transparent
-    );
-    transform: translateX(-130%);
+  .spin-btn-label {
+    pointer-events: none;
   }
 
-  #spin-wheel-btn:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 18px 28px rgba(0, 0, 0, 0.28),
-      inset 0 -2px 0 rgba(120, 64, 0, 0.3);
-    filter: brightness(1.02);
+  .spin-btn-icon {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    pointer-events: none;
   }
 
-  #spin-wheel-btn:not(:disabled):hover::before {
-    transform: translateX(130%);
-    transition: transform 0.75s ease;
+  #spin-wheel-btn:hover:not(:disabled) {
+    background: #020617;
+    box-shadow: 0 24px 36px -20px rgba(15, 23, 42, 0.62);
   }
 
   #spin-wheel-btn:active:not(:disabled) {
-    transform: translateY(0);
+    transform: scale(0.98);
   }
 
-  #spin-wheel-btn:disabled {
-    background: linear-gradient(130deg, var(--spin-btn-disabled), #8f867f);
-    color: rgba(37, 37, 37, 0.75);
+  #spin-wheel-btn.is-loading {
+    background: #f1f5f9;
+    color: #94a3b8;
     cursor: not-allowed;
     box-shadow: none;
   }
 
-  #spin-wheel-message {
-    min-height: 48px;
-    margin-top: 1rem;
-    padding: 0.85rem 1rem;
-    border-radius: 12px;
-    font-weight: 700;
-    line-height: 1.35;
-    border: 1px solid transparent;
-    background: rgba(255, 255, 255, 0.07);
-    color: #fff7ed;
+  #spin-wheel-btn.is-loading .spin-btn-icon {
+    display: none;
+  }
+
+  #spin-wheel-btn:disabled {
+    cursor: not-allowed;
+  }
+
+  .spin-result-modal[hidden] {
+    display: none !important;
+  }
+
+  .spin-result-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
     opacity: 0;
-    transform: translateY(8px);
-    transition:
-      opacity 0.24s ease,
-      transform 0.24s ease,
-      background-color 0.24s ease,
-      border-color 0.24s ease;
+    transition: opacity 0.22s ease;
   }
 
-  #spin-wheel-message.is-visible {
+  .spin-result-modal.is-open {
     opacity: 1;
-    transform: translateY(0);
   }
 
-  #spin-wheel-message.state-info {
-    background: rgba(254, 215, 102, 0.16);
-    border-color: rgba(254, 215, 102, 0.45);
+  .spin-result-card {
+    position: relative;
+    width: min(420px, 100%);
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 2.25rem;
+    padding: 2.2rem 1.5rem;
+    box-shadow: 0 45px 60px -18px rgba(15, 23, 42, 0.45);
+    text-align: center;
+    overflow: hidden;
   }
 
-  #spin-wheel-message.state-success {
-    background: rgba(110, 231, 183, 0.18);
-    border-color: rgba(110, 231, 183, 0.44);
+  .spin-result-glow {
+    position: absolute;
+    top: -40px;
+    left: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(250, 204, 21, 0.2);
+    filter: blur(35px);
   }
 
-  #spin-wheel-message.state-error {
-    background: rgba(248, 113, 113, 0.2);
-    border-color: rgba(248, 113, 113, 0.45);
+  .spin-result-gift {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    margin: 0 auto 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 30px -16px rgba(15, 23, 42, 0.3);
   }
 
-  @keyframes spin-wheel-breathe {
-    0%,
-    100% {
-      transform: scale(1);
-      opacity: 0.78;
+  .spin-result-gift .spin-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .spin-result-gift.is-win {
+    background: #facc15;
+    color: #0f172a;
+  }
+
+  .spin-result-gift.is-loss {
+    background: #f1f5f9;
+    color: #94a3b8;
+  }
+
+  #spin-result-title {
+    margin: 0 0 0.65rem;
+    font-family: "Sora", sans-serif;
+    font-size: clamp(2rem, 7vw, 2.35rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #0f172a;
+  }
+
+  #spin-result-text {
+    margin: 0 0 1.65rem;
+    color: #64748b;
+    font-size: 0.96rem;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  #spin-result-close {
+    width: 100%;
+    border: none;
+    border-radius: 1rem;
+    background: #0f172a;
+    color: #ffffff;
+    font-family: "Sora", sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 1.05rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  #spin-result-close:hover {
+    background: #020617;
+  }
+
+  .spin-icon {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    flex: 0 0 auto;
+  }
+
+  @media (min-width: 700px) {
+    .spin-wheel-form-card {
+      padding: 2.5rem;
     }
-    50% {
-      transform: scale(1.04);
-      opacity: 0.98;
+
+    .spin-grid-two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .spin-result-card {
+      padding: 2.8rem;
     }
   }
 
-  @keyframes spin-wheel-rise {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (max-width: 1360px) {
+  @media (min-width: 1024px) {
     #spin-wheel-app {
-      grid-template-columns: minmax(0, 540px) minmax(0, 500px);
-      gap: 1.5rem;
-      height: auto;
-      max-height: none;
-      overflow: visible;
-      padding: 0.9rem;
+      min-height: 100vh;
+      padding: 1rem 1.3rem;
+    }
+
+    .spin-shell {
+      flex-direction: row;
+      gap: var(--spin-desktop-gap);
+      width: min(1240px, 100%);
+    }
+
+    .spin-wheel-column {
+      flex: 0 0 var(--spin-wheel-size-desktop);
+    }
+
+    .spin-form-column {
+      flex: 0 0 var(--spin-form-width-desktop);
+      width: var(--spin-form-width-desktop);
     }
 
     .spin-wheel-container {
-      width: min(48vw, 540px);
-      height: min(48vw, 540px);
+      width: var(--spin-wheel-size-desktop);
+      height: var(--spin-wheel-size-desktop);
     }
 
-    .spin-wheel-form {
-      max-width: 500px;
+    .spin-wheel-form-card {
+      padding: 3rem;
     }
   }
 
-  @media (max-width: 1180px) {
-    #spin-wheel-app {
-      grid-template-columns: 1fr;
-      justify-items: center;
-      gap: 1.25rem;
-      height: auto;
-      max-height: none;
-      overflow: visible;
-      padding: 0.75rem;
-    }
-
+  @media (max-width: 1280px) {
     .spin-wheel-container {
-      width: min(78vw, 500px);
-      height: min(78vw, 500px);
+      width: min(74vw, 540px);
+      height: min(74vw, 540px);
     }
 
-    .spin-wheel-form {
+    .spin-form-column {
+      width: min(100%, 520px);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    #spin-wheel-app {
+      padding: 1rem 0.7rem;
+    }
+
+    .spin-shell {
+      gap: 1.35rem;
+    }
+
+    .spin-form-column {
       width: min(100%, 560px);
-      max-width: 560px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    #spin-wheel-app {
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 0.85rem;
-      padding: 0.75rem 0.7rem 0.25rem;
-      min-height: auto;
-      height: auto;
-      max-height: none;
     }
 
     .spin-wheel-container {
-      width: min(84vw, 360px);
-      height: min(84vw, 360px);
+      width: min(84vw, 420px);
+      height: min(84vw, 420px);
     }
 
-    #spin-wheel-image {
-      inset: 12px;
-    }
-
-    .segment-text {
-      font-size: 14px;
-      width: 124px;
-      left: 78%;
-    }
-
-    .spin-wheel-form {
-      max-width: 100%;
-      padding: 1.5rem 1.3rem;
-      border-radius: 20px;
-    }
-
-    #spin-wheel-form input,
-    #spin-wheel-btn {
-      height: 54px;
-    }
-
-    #spin-wheel-btn {
-      font-size: 15px;
+    .spin-wheel-clacker {
+      right: -16px;
     }
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 560px) {
+    .spin-wheel-ring {
+      inset: -16px;
+      border-width: 8px;
+    }
+
+    .spin-wheel-clacker {
+      right: -10px;
+    }
+
+    .spin-wheel-clacker-tip {
+      width: 34px;
+      height: 28px;
+    }
+
+    .spin-wheel-clacker-dot {
+      width: 13px;
+      height: 13px;
+      right: -6px;
+    }
+
     .spin-wheel-container {
-      width: min(82vw, 300px);
-      height: min(82vw, 300px);
+      width: min(82vw, 320px);
+      height: min(82vw, 320px);
+      padding: 10px;
     }
 
     #spin-wheel-image {
-      inset: 10px;
+      inset: 9px;
     }
 
     .segment-text {
-      font-size: 12px;
-      width: 100px;
+      width: 104px;
+      font-size: 0.78rem;
     }
 
-    .wheel-pointer {
-      width: 42px;
-      height: 42px;
+    .spin-wheel-form-card {
+      border-radius: 2rem;
+      padding: 1.5rem 1rem;
     }
 
-    .pointer-arm {
-      border-left-width: 34px;
-      border-top-width: 11px;
-      border-bottom-width: 11px;
+    .spin-title {
+      font-size: clamp(1.7rem, 8vw, 2.2rem);
+    }
+
+    #spin-wheel-btn {
+      min-height: 60px;
+      font-size: 0.95rem;
     }
   }
 
@@ -637,49 +810,52 @@
     const wheel = document.getElementById("spin-wheel-image");
     const form = document.getElementById("spin-wheel-form");
     const btn = document.getElementById("spin-wheel-btn");
-    const msg = document.getElementById("spin-wheel-message");
+    const btnLabel = btn ? btn.querySelector(".spin-btn-label") : null;
 
-    if (!wheel || !form || !btn || !msg) {
-      console.error("Wheel elements missing");
+    const errorBox = document.getElementById("spin-wheel-error");
+    const errorText = document.getElementById("spin-wheel-error-text");
+
+    const modal = document.getElementById("spin-result-modal");
+    const modalGift = document.getElementById("spin-result-gift");
+    const modalTitle = document.getElementById("spin-result-title");
+    const modalText = document.getElementById("spin-result-text");
+    const modalClose = document.getElementById("spin-result-close");
+
+    if (!wheel || !form || !btn || !btnLabel || !errorBox || !errorText || !modal || !modalGift || !modalTitle || !modalText || !modalClose) {
+      console.error("Spin wheel UI elements are missing.");
       return;
     }
 
-    const setMessage = (text, type = "info") => {
-      msg.innerHTML = text || "";
-      msg.classList.remove(
-        "state-info",
-        "state-success",
-        "state-error",
-        "is-visible",
-      );
-
-      if (text) {
-        msg.classList.add("is-visible");
-        msg.classList.add(`state-${type}`);
-      }
+    const fields = {
+      name: form.querySelector('input[name="name"]'),
+      email: form.querySelector('input[name="email"]'),
+      mobile: form.querySelector('input[name="mobile"]'),
+      location: form.querySelector('input[name="location"]'),
+      consent: form.querySelector('input[name="consent"]'),
     };
+
+    if (!fields.name || !fields.email || !fields.mobile || !fields.location || !fields.consent) {
+      console.error("Form fields are missing.");
+      return;
+    }
 
     const segments = wheel.querySelectorAll(".wheel-segment");
 
     const WHEEL_SEGMENTS = [
       {
-        image:
-          "https://tools.codezyners.in/wp-content/uploads/2025/12/red.webp",
+        image: "https://tools.codezyners.in/wp-content/uploads/2025/12/red.webp",
         fallback: "linear-gradient(145deg, #ef4444 0%, #be123c 100%)",
       },
       {
-        image:
-          "https://tools.codezyners.in/wp-content/uploads/2025/12/green.webp",
+        image: "https://tools.codezyners.in/wp-content/uploads/2025/12/green.webp",
         fallback: "linear-gradient(145deg, #22c55e 0%, #15803d 100%)",
       },
       {
-        image:
-          "https://tools.codezyners.in/wp-content/uploads/2025/12/blue.webp",
+        image: "https://tools.codezyners.in/wp-content/uploads/2025/12/blue.webp",
         fallback: "linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%)",
       },
       {
-        image:
-          "https://tools.codezyners.in/wp-content/uploads/2025/12/gray.webp",
+        image: "https://tools.codezyners.in/wp-content/uploads/2025/12/gray.webp",
         fallback: "linear-gradient(145deg, #9ca3af 0%, #4b5563 100%)",
       },
     ];
@@ -695,10 +871,72 @@
     let currentRotation = 0;
     let spinning = false;
 
+    const setInlineError = (message) => {
+      if (!message) {
+        errorBox.hidden = true;
+        errorText.textContent = "";
+        return;
+      }
+
+      errorText.textContent = message;
+      errorBox.hidden = false;
+    };
+
+    const setLoading = (loading) => {
+      btn.disabled = loading;
+      btn.classList.toggle("is-loading", loading);
+      btnLabel.textContent = loading ? "Randomizing..." : "Spin To Win";
+    };
+
+    const closeModal = (resetForm) => {
+      modal.classList.remove("is-open");
+      setTimeout(() => {
+        modal.hidden = true;
+      }, 220);
+
+      if (resetForm) {
+        form.reset();
+        setInlineError("");
+      }
+    };
+
+    const openModal = ({ isVoucher, heading, body }) => {
+      modalGift.classList.remove("is-win", "is-loss");
+      modalGift.classList.add(isVoucher ? "is-win" : "is-loss");
+
+      modalTitle.textContent = heading;
+      modalText.textContent = body;
+
+      modal.hidden = false;
+      requestAnimationFrame(() => {
+        modal.classList.add("is-open");
+      });
+    };
+
+    const validate = () => {
+      const name = fields.name.value.trim();
+      const email = fields.email.value.trim();
+      const mobile = fields.mobile.value.trim();
+      const location = fields.location.value.trim();
+
+      if (!name || !email || !mobile || !location) {
+        return "We need your details to ship the prize. Don't leave them blank.";
+      }
+
+      if (!fields.consent.checked) {
+        return "Please accept the terms to proceed.";
+      }
+
+      return "";
+    };
+
     form.addEventListener("input", () => {
-      btn.disabled = spinning || !form.checkValidity();
-      if (msg.classList.contains("state-error")) {
-        setMessage("");
+      if (!spinning) {
+        setLoading(false);
+      }
+
+      if (!errorBox.hidden) {
+        setInlineError("");
       }
     });
 
@@ -706,14 +944,23 @@
       e.preventDefault();
       if (spinning) return;
 
+      const validationMessage = validate();
+      if (validationMessage) {
+        setInlineError(validationMessage);
+        return;
+      }
+
+      setInlineError("");
       spinning = true;
-      btn.disabled = true;
-      btn.textContent = "SPINNING...";
-      setMessage("Spinning...", "info");
+      setLoading(true);
 
       try {
-        const data = new FormData(form);
+        const data = new FormData();
         data.append("action", "spin_wheel");
+        data.append("name", fields.name.value.trim());
+        data.append("email", fields.email.value.trim());
+        data.append("mobile", fields.mobile.value.trim());
+        data.append("location", fields.location.value.trim());
 
         const res = await fetch("/wp-admin/admin-ajax.php", {
           method: "POST",
@@ -723,51 +970,71 @@
         const json = await res.json();
 
         if (!json.success) {
-          setMessage(json.data?.message || "Something went wrong", "error");
+          setInlineError(json.data?.message || "Something went wrong.");
           spinning = false;
-          btn.disabled = false;
-          btn.textContent = "SPIN NOW";
+          setLoading(false);
           return;
         }
 
         const indexMap = {
-          voucher_1000: [3],
-          voucher_500: [1],
-          blnt: [0, 2],
+          voucher_1000: [0],
+          voucher_500: [2],
+          blnt: [1, 3],
         };
 
         const resultKey = json?.data?.result_key;
-        const possibleIndexes = indexMap[resultKey] || [3];
-        const index =
-          possibleIndexes[Math.floor(Math.random() * possibleIndexes.length)];
-        const SEGMENT_ANGLE = 90;
-        const SEGMENT_CENTER = 45;
-        const POINTER_ANGLE = -45;
-        const spins = 8;
+        const resultLabel = json?.data?.result_label || "";
+        const possibleIndexes = indexMap[resultKey] || [1];
+        const winningIndex = possibleIndexes[Math.floor(Math.random() * possibleIndexes.length)];
 
-        const targetRotation =
-          currentRotation +
-          spins * 360 +
-          (360 - (index * SEGMENT_ANGLE + SEGMENT_CENTER) + POINTER_ANGLE);
+        const pointerAngle = 0;
+        const targetSegmentCenter = winningIndex * 90;
+        const currentSegmentAngle = (currentRotation + targetSegmentCenter) % 360;
+        const alignDelta = (pointerAngle - currentSegmentAngle + 360) % 360;
 
-        wheel.style.transition = "transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)";
-        wheel.style.transform = `rotate(${targetRotation}deg)`;
+        const spins = 2880;
+        const newRotation = currentRotation + spins + alignDelta;
+
+        wheel.style.transition = "transform 4500ms cubic-bezier(0.2, 0, 0, 1)";
+        wheel.style.transform = `rotate(${newRotation}deg)`;
 
         setTimeout(() => {
-          setMessage(
-            `<strong>Result:</strong> ${json.data.result_label}`,
-            "success",
-          );
-          btn.textContent = "SPIN COMPLETE";
-          currentRotation = targetRotation % 360;
           spinning = false;
-        }, 3000);
+          setLoading(false);
+          currentRotation = newRotation % 360;
+
+          const firstName = fields.name.value.trim().split(/\s+/)[0] || "there";
+          const isVoucher = resultKey === "voucher_1000" || resultKey === "voucher_500";
+
+          const resultText = isVoucher
+            ? resultLabel.toUpperCase()
+            : winningIndex === 1
+              ? "TRY AGAIN"
+              : "NEXT TIME";
+
+          openModal({
+            isVoucher,
+            heading: isVoucher ? "Jackpot!" : "Missed It.",
+            body: isVoucher
+              ? `Congratulations ${firstName}! You've won ${resultText}.`
+              : "Not your lucky spin. Try again tomorrow!",
+          });
+        }, 4500);
       } catch (err) {
         console.error(err);
-        setMessage("Network error", "error");
+        setInlineError("Network error. Please try again.");
         spinning = false;
-        btn.disabled = false;
-        btn.textContent = "SPIN NOW";
+        setLoading(false);
+      }
+    });
+
+    modalClose.addEventListener("click", () => {
+      closeModal(true);
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeModal(true);
       }
     });
   });
