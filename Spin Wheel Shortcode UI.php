@@ -101,7 +101,7 @@ add_shortcode('spin_wheel', function () {
 
                         <label class="spin-agree-row">
                             <input type="checkbox" name="consent" id="spin-consent">
-                            <span>I agree to the <a href="https://chocolate-nightingale-996191.hostingersite.com/terms-and-conditions/" target="_blank" rel="noopener">Terms of Entry</a>.</span>
+                            <span>I agree to the <a href="#" target="_blank" rel="noopener">Terms and Conditions</a>.</span>
                         </label>
 
                         <button type="submit" id="spin-wheel-btn">
