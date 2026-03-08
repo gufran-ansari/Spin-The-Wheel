@@ -1,9 +1,15 @@
 <style>
-	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Sora:wght@600;700;800&display=swap');
 
-	/* =========================
-   GLOBAL
-========================= */
+	:root {
+		--spin-text: #1f2937;
+		--spin-card-bg: rgba(88, 24, 19, 0.94);
+		--spin-card-border: rgba(255, 255, 255, 0.25);
+		--spin-accent: #ffbe0b;
+		--spin-accent-strong: #ff9f1a;
+		--spin-btn-disabled: #b4aca6;
+	}
+
 	html,
 	body {
 		margin: 0;
@@ -16,10 +22,12 @@
 	}
 
 	body {
-		font-family: 'Inter', sans-serif;
-		background: linear-gradient(135deg,
-				rgba(139, 0, 81, 0.12) 0%,
-				rgba(120, 13, 98, 0.12) 100%);
+		font-family: 'Manrope', sans-serif;
+		color: var(--spin-text);
+		background:
+			radial-gradient(circle at 15% 10%, rgba(255, 196, 129, 0.35), transparent 35%),
+			radial-gradient(circle at 85% 90%, rgba(255, 132, 121, 0.24), transparent 30%),
+			linear-gradient(140deg, #fff8ec 0%, #ffe8d8 45%, #ffd8d1 100%);
 	}
 
 	/* Elementor fixes */
@@ -32,85 +40,93 @@
 	.elementor-widget-container {
 		display: flex;
 		justify-content: center;
+		width: 100%;
 	}
 
-	/* =========================
-   APP WRAPPER
-========================= */
 	#spin-wheel-app {
-		max-width: 1440px;
-		min-height: 90vh;
+		width: min(1180px, 100%);
 		margin: 0 auto;
-		padding: 3rem 2rem;
-		display: flex;
+		min-height: 90vh;
+		padding: clamp(1.25rem, 2.8vw, 3rem);
+		display: grid;
+		grid-template-columns: minmax(300px, 560px) minmax(320px, 500px);
 		align-items: center;
 		justify-content: center;
-		gap: 60px;
-		flex-wrap: wrap;
+		gap: clamp(1.5rem, 3vw, 4rem);
+		position: relative;
 	}
 
-	/* =========================
-   WHEEL CONTAINER
-========================= */
 	.spin-wheel-container {
 		position: relative;
-		width: 500px;
-		height: 500px;
+		width: min(72vw, 520px);
+		height: min(72vw, 520px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		filter: drop-shadow(0 24px 40px rgba(71, 31, 22, 0.35));
+		isolation: isolate;
+		animation: spin-wheel-rise 0.7s ease both;
 	}
 
-	/* =========================
-   GOLD RING (STATIC)
-========================= */
+	.wheel-glow {
+		position: absolute;
+		inset: 10%;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(255, 226, 140, 0.52), rgba(255, 226, 140, 0));
+		z-index: 0;
+		animation: spin-wheel-breathe 3.8s ease-in-out infinite;
+	}
+
 	.gold-ring {
 		position: absolute;
 		inset: 0;
 		border-radius: 50%;
-		background: linear-gradient(135deg,
-				#f6e27a 0%,
-				#e6b65c 25%,
-				#cfa445 50%,
-				#f6e27a 75%,
-				#b88a2b 100%);
+		background: linear-gradient(140deg,
+				#fdf4a8 0%,
+				#f6cd75 22%,
+				#dc9f3f 50%,
+				#f8d372 75%,
+				#bb7d28 100%);
 		box-shadow:
-			0 0 14px rgba(255, 215, 120, 0.9),
-			inset 0 0 10px rgba(255, 255, 255, 0.45);
+			0 0 14px rgba(255, 209, 125, 0.95),
+			0 0 40px rgba(230, 161, 61, 0.6),
+			inset 0 0 12px rgba(255, 255, 255, 0.55);
 		z-index: 1;
 	}
 
-	/* =========================
-   ROTATING WHEEL (JS CONTROLS ROTATION)
-========================= */
+	#spin-wheel-wheel {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 2;
+	}
+
 	#spin-wheel-image {
 		position: absolute;
-		inset: 15px;
+		inset: 18px;
 		border-radius: 50%;
 		overflow: hidden;
 		z-index: 2;
-
-		/* 🔥 critical */
 		transform-origin: 50% 50%;
 		will-change: transform;
-
-		/* ❌ do NOT animate here */
 		transition: none;
+		box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4);
 	}
 
-	/* Center cap */
 	#spin-wheel-image::after {
 		content: "";
 		position: absolute;
-		inset: 46%;
+		inset: 45.5%;
 		border-radius: 50%;
-		background: radial-gradient(circle, #f6e27a, #b88a2b);
+		background: radial-gradient(circle at 35% 35%, #fff6c4, #cc8f34);
 		z-index: 6;
+		box-shadow:
+			0 4px 14px rgba(0, 0, 0, 0.35),
+			inset 0 2px 5px rgba(255, 255, 255, 0.45);
 	}
 
-	/* =========================
-   WHEEL SEGMENTS
-========================= */
 	.wheel-segment {
 		position: absolute;
 		inset: 0;
@@ -136,30 +152,29 @@
 		transform: rotate(270deg);
 	}
 
-	/* =========================
-   SEGMENT TEXT
-========================= */
 	.segment-text {
 		position: absolute;
 		top: 50%;
-		left: 80%;
-		width: 160px;
+		left: 79%;
+		width: 165px;
 		transform: translate(-50%, -50%);
 		color: #fff;
+		font-family: 'Sora', sans-serif;
 		font-weight: 700;
-		font-size: 18px;
-		line-height: 1.2;
+		font-size: 17px;
+		line-height: 1.24;
 		text-align: center;
+		letter-spacing: 0.03em;
 		text-transform: uppercase;
 		text-shadow:
 			0 2px 4px rgba(0, 0, 0, 0.6),
-			0 0 8px rgba(0, 0, 0, 0.3);
+			0 0 10px rgba(0, 0, 0, 0.35);
 		pointer-events: none;
 		white-space: nowrap;
 	}
 
 	.seg-0 .segment-text {
-		transform: translate(-50%, -70%) rotate(0deg);
+		transform: translate(-50%, -71%) rotate(0deg);
 	}
 
 	.seg-1 .segment-text {
@@ -167,41 +182,36 @@
 	}
 
 	.seg-2 .segment-text {
-		transform: translate(-50%, -30%) rotate(0deg);
+		transform: translate(-50%, -29%) rotate(0deg);
 	}
 
 	.seg-3 .segment-text {
 		transform: translate(-50%, -50%) rotate(0deg);
 	}
 
-	/* =========================
-   CENTER POINTER (STATIC @ 3 O’CLOCK)
-========================= */
 	.wheel-pointer {
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		width: 48px;
-		height: 48px;
+		width: 50px;
+		height: 50px;
 		transform: translate(-50%, -50%);
 		z-index: 10;
 		pointer-events: none;
 	}
 
-	/* center knob */
 	.wheel-pointer::before {
 		content: "";
 		position: absolute;
 		inset: 0;
 		border-radius: 50%;
-		background: radial-gradient(circle at 30% 30%, #fff3a0, #cfa445);
+		background: radial-gradient(circle at 30% 30%, #fff8ca, #d28f32);
 		box-shadow:
-			0 4px 8px rgba(0, 0, 0, .4),
-			inset 0 2px 4px rgba(255, 255, 255, .6);
+			0 4px 9px rgba(0, 0, 0, 0.4),
+			inset 0 2px 5px rgba(255, 255, 255, 0.62);
 		z-index: 2;
 	}
 
-	/* pointer arm */
 	.pointer-arm {
 		position: absolute;
 		top: 50%;
@@ -211,107 +221,271 @@
 		height: 0;
 		border-top: 14px solid transparent;
 		border-bottom: 14px solid transparent;
-		border-left: 48px solid #e6b65c;
-		filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .35));
+		border-left: 48px solid #efb559;
+		filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.32));
 		z-index: 1;
 	}
 
-	/* =========================
-   FORM
-========================= */
 	.spin-wheel-form {
-		background: linear-gradient(135deg, #891c56 0%, #780D62 100%);
-		border-radius: 16px;
-		padding: 3rem 2.5rem;
+		background: linear-gradient(145deg, rgba(133, 26, 18, 0.95) 0%, rgba(70, 8, 7, 0.92) 100%);
+		border: 1px solid var(--spin-card-border);
+		border-radius: 24px;
+		padding: clamp(1.5rem, 3vw, 2.8rem);
 		width: 100%;
-		max-width: 450px;
-		color: #fff;
+		max-width: 500px;
+		color: #fff8f1;
+		position: relative;
+		overflow: hidden;
+		box-shadow: 0 24px 45px rgba(42, 10, 7, 0.45);
+		animation: spin-wheel-rise 0.8s ease both;
+		animation-delay: 0.08s;
 	}
 
-	/* Inputs */
+	.spin-wheel-form::before {
+		content: "";
+		position: absolute;
+		width: 220px;
+		height: 220px;
+		right: -90px;
+		top: -100px;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(255, 205, 112, 0.35), rgba(255, 205, 112, 0));
+		pointer-events: none;
+	}
+
+	.spin-form-header {
+		position: relative;
+		z-index: 1;
+		margin-bottom: 1.15rem;
+	}
+
+	.spin-kicker {
+		margin: 0;
+		font-family: 'Sora', sans-serif;
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: #ffd966;
+	}
+
+	.spin-title {
+		margin: 0.35rem 0 0.6rem;
+		font-family: 'Sora', sans-serif;
+		font-size: clamp(1.65rem, 3vw, 2.25rem);
+		font-weight: 800;
+		line-height: 1.05;
+		letter-spacing: 0.01em;
+		color: #fff9ed;
+	}
+
+	.spin-subtitle {
+		margin: 0;
+		font-size: 0.92rem;
+		line-height: 1.6;
+		color: rgba(255, 247, 238, 0.88);
+	}
+
+	#spin-wheel-form {
+		display: flex;
+		flex-direction: column;
+		gap: 0.9rem;
+		position: relative;
+		z-index: 1;
+	}
+
 	#spin-wheel-form input {
 		width: 100%;
-		padding: 30px 18px;
-		margin-bottom: 18px;
+		height: 58px;
+		padding: 0 1rem;
 		font-size: 15px;
-		border-radius: 8px;
-		border: none;
-		background: #ffffff;
-		color: #333;
+		font-weight: 600;
+		border-radius: 14px;
+		border: 1px solid transparent;
+		background: rgba(255, 255, 255, 0.95);
+		color: #2d2d2d;
+		transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 	}
 
 	#spin-wheel-form input::placeholder {
-		color: #777;
+		color: #7b7b7b;
+		font-weight: 500;
 	}
 
 	#spin-wheel-form input:focus {
 		outline: none;
+		border-color: #fbbf24;
+		box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.22);
+		transform: translateY(-1px);
 	}
 
-	/* Checkbox */
 	#spin-wheel-form input[type="checkbox"] {
-		width: 5%;
+		width: 18px;
+		height: 18px;
+		margin: 3px 0 0;
 		padding: 0;
-		margin: 0;
-	}
-
-	#spin-wheel-form span {
-		font-size: 0.75rem;
-		font-weight: 400;
-		color: #fff;
-		width: 90%;
+		accent-color: #fbbf24;
+		flex: 0 0 auto;
+		border-radius: 4px;
 	}
 
 	.spin-wheel-consent {
 		display: flex;
-		gap: 10px;
-		align-items: center;
+		gap: 11px;
+		align-items: flex-start;
 		font-size: 12px;
-		color: #d1d5db;
-		margin: 18px 0 26px;
+		margin: 0.2rem 0 0.15rem;
 	}
 
-	/* Button */
+	.spin-wheel-consent span {
+		font-size: 0.78rem;
+		font-weight: 500;
+		color: rgba(255, 247, 238, 0.92);
+		line-height: 1.5;
+	}
+
+	.spin-wheel-consent a {
+		color: #ffe082;
+		font-weight: 700;
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 3px;
+	}
+
 	#spin-wheel-btn {
 		width: 100%;
-		padding: 18px;
-		font-size: 18px;
-		font-weight: 700;
-		text-transform: uppercase;
-		border-radius: 8px;
+		height: 58px;
 		border: none;
-		background: #eab308;
-		color: #000;
+		border-radius: 14px;
+		font-family: 'Sora', sans-serif;
+		font-size: 17px;
+		font-weight: 800;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+		background: linear-gradient(110deg, var(--spin-accent) 0%, var(--spin-accent-strong) 100%);
+		color: #2c1700;
 		cursor: pointer;
+		position: relative;
+		overflow: hidden;
+		box-shadow:
+			0 14px 24px rgba(0, 0, 0, 0.24),
+			inset 0 -2px 0 rgba(120, 64, 0, 0.25);
+		transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+	}
+
+	#spin-wheel-btn::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.58), transparent);
+		transform: translateX(-130%);
+	}
+
+	#spin-wheel-btn:not(:disabled):hover {
+		transform: translateY(-2px);
+		box-shadow:
+			0 18px 28px rgba(0, 0, 0, 0.28),
+			inset 0 -2px 0 rgba(120, 64, 0, 0.3);
+		filter: brightness(1.02);
+	}
+
+	#spin-wheel-btn:not(:disabled):hover::before {
+		transform: translateX(130%);
+		transition: transform 0.75s ease;
+	}
+
+	#spin-wheel-btn:active:not(:disabled) {
+		transform: translateY(0);
 	}
 
 	#spin-wheel-btn:disabled {
-		background: #aaa;
-		color: #444;
+		background: linear-gradient(130deg, var(--spin-btn-disabled), #8f867f);
+		color: rgba(37, 37, 37, 0.75);
 		cursor: not-allowed;
+		box-shadow: none;
 	}
 
-	/* Message */
 	#spin-wheel-message {
-		margin-top: 16px;
-		font-weight: 600;
+		min-height: 48px;
+		margin-top: 1rem;
+		padding: 0.85rem 1rem;
+		border-radius: 12px;
+		font-weight: 700;
+		line-height: 1.35;
+		border: 1px solid transparent;
+		background: rgba(255, 255, 255, 0.07);
+		color: #fff7ed;
+		opacity: 0;
+		transform: translateY(8px);
+		transition: opacity 0.24s ease, transform 0.24s ease, background-color 0.24s ease, border-color 0.24s ease;
 	}
 
-	/* =========================
-   RESPONSIVE LAYOUT
-========================= */
+	#spin-wheel-message.is-visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
 
-	/* -------- Tablets (≤ 1024px) -------- */
-	@media (max-width: 1024px) {
+	#spin-wheel-message.state-info {
+		background: rgba(254, 215, 102, 0.16);
+		border-color: rgba(254, 215, 102, 0.45);
+	}
 
+	#spin-wheel-message.state-success {
+		background: rgba(110, 231, 183, 0.18);
+		border-color: rgba(110, 231, 183, 0.44);
+	}
+
+	#spin-wheel-message.state-error {
+		background: rgba(248, 113, 113, 0.2);
+		border-color: rgba(248, 113, 113, 0.45);
+	}
+
+	@keyframes spin-wheel-breathe {
+		0%,
+		100% {
+			transform: scale(1);
+			opacity: 0.78;
+		}
+		50% {
+			transform: scale(1.04);
+			opacity: 0.98;
+		}
+	}
+
+	@keyframes spin-wheel-rise {
+		from {
+			opacity: 0;
+			transform: translateY(18px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (max-width: 1100px) {
 		#spin-wheel-app {
-			gap: 40px;
-			padding: 2rem 1.5rem;
+			grid-template-columns: 1fr;
+			justify-items: center;
+			gap: 2.2rem;
+		}
+
+		.spin-wheel-form {
+			max-width: 560px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		#spin-wheel-app {
+			display: flex;
+			flex-direction: column-reverse;
+			gap: 1.8rem;
+			padding: 1.35rem 0.95rem 2rem;
 		}
 
 		.spin-wheel-container {
-			width: 420px;
-			height: 420px;
+			width: min(88vw, 420px);
+			height: min(88vw, 420px);
 		}
 
 		#spin-wheel-image {
@@ -319,186 +493,185 @@
 		}
 
 		.segment-text {
-			font-size: 16px;
-			width: 140px;
+			font-size: 14px;
+			width: 124px;
+			left: 78%;
 		}
 
 		.spin-wheel-form {
-			padding: 2.5rem 2rem;
+			max-width: 100%;
+			padding: 1.5rem 1.3rem;
+			border-radius: 20px;
+		}
+
+		#spin-wheel-form input,
+		#spin-wheel-btn {
+			height: 54px;
+		}
+
+		#spin-wheel-btn {
+			font-size: 15px;
 		}
 	}
 
-	/* -------- Mobile (≤ 768px) -------- */
-	@media (max-width: 768px) {
-
-		/* 🔥 FORM FIRST, WHEEL SECOND */
-		#spin-wheel-app {
-			flex-direction: column-reverse;
-			gap: 32px;
-			padding: 2rem 1rem;
-		}
-
-		/* Wheel scaling */
+	@media (max-width: 480px) {
 		.spin-wheel-container {
-			width: 380px;
-			height: 380px;
+			width: min(92vw, 340px);
+			height: min(92vw, 340px);
 		}
 
 		#spin-wheel-image {
 			inset: 10px;
 		}
 
-		.gold-ring {
-			inset: 0;
-		}
-
-		/* Text scaling */
 		.segment-text {
-			font-size: 14px;
-			width: 120px;
-			left: 78%;
+			font-size: 12px;
+			width: 100px;
 		}
 
-		/* Pointer scaling */
 		.wheel-pointer {
-			width: 40px;
-			height: 40px;
+			width: 42px;
+			height: 42px;
 		}
 
 		.pointer-arm {
-			border-left-width: 36px;
-			border-top-width: 12px;
-			border-bottom-width: 12px;
-		}
-
-		/* Form full-width */
-		.spin-wheel-form {
-			width: 100%;
-			max-width: 100%;
-			padding: 2.2rem 1.5rem;
-		}
-
-		#spin-wheel-form input {
-			padding: 22px 16px;
-		}
-
-		#spin-wheel-btn {
-			padding: 16px;
-			font-size: 16px;
+			border-left-width: 34px;
+			border-top-width: 11px;
+			border-bottom-width: 11px;
 		}
 	}
 
-	/* -------- Small Phones (≤ 480px) -------- */
-	@media (max-width: 480px) {
-
-		.spin-wheel-container {
-			width: 320px;
-			height: 320px;
-		}
-
-		.segment-text {
-			font-size: 13px;
-			width: 110px;
-		}
-
-		.pointer-arm {
-			border-left-width: 32px;
+	@media (prefers-reduced-motion: reduce) {
+		* {
+			animation: none !important;
+			transition-duration: 0.01ms !important;
 		}
 	}
-
 </style>
 <script>
-	document.addEventListener( "DOMContentLoaded", () => {
+	document.addEventListener("DOMContentLoaded", () => {
 
-		const wheel = document.getElementById( "spin-wheel-image" ); // ONLY this rotates
-		const form = document.getElementById( "spin-wheel-form" );
-		const btn = document.getElementById( "spin-wheel-btn" );
-		const msg = document.getElementById( "spin-wheel-message" );
+		const wheel = document.getElementById("spin-wheel-image");
+		const form = document.getElementById("spin-wheel-form");
+		const btn = document.getElementById("spin-wheel-btn");
+		const msg = document.getElementById("spin-wheel-message");
 
-		if ( !wheel || !form || !btn || !msg ) {
-			console.error( "Wheel elements missing" );
+		if (!wheel || !form || !btn || !msg) {
+			console.error("Wheel elements missing");
 			return;
 		}
 
-		const segments = wheel.querySelectorAll( ".wheel-segment" );
- 
-		const WHEEL_IMAGES = [
-			"https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-red.webp",
-			"https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-blue.webp",
-			"https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-gray.webp",
-			"https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-green.webp"
+		const setMessage = (text, type = "info") => {
+			msg.innerHTML = text || "";
+			msg.classList.remove("state-info", "state-success", "state-error", "is-visible");
+
+			if (text) {
+				msg.classList.add("is-visible");
+				msg.classList.add(`state-${type}`);
+			}
+		};
+
+		const segments = wheel.querySelectorAll(".wheel-segment");
+
+		const WHEEL_SEGMENTS = [
+			{
+				image: "https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-red.webp",
+				fallback: "linear-gradient(145deg, #ef4444 0%, #be123c 100%)"
+			},
+			{
+				image: "https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-blue.webp",
+				fallback: "linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%)"
+			},
+			{
+				image: "https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-gray.webp",
+				fallback: "linear-gradient(145deg, #9ca3af 0%, #4b5563 100%)"
+			},
+			{
+				image: "https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-green.webp",
+				fallback: "linear-gradient(145deg, #22c55e 0%, #15803d 100%)"
+			}
 		];
 
-		segments.forEach( ( seg, i ) => {
-			seg.style.backgroundImage = `url(${WHEEL_IMAGES[i]})`;
-		} );
+		segments.forEach((seg, i) => {
+			const config = WHEEL_SEGMENTS[i];
+			if (!config) return;
+			seg.style.backgroundImage = `url(${config.image}), ${config.fallback}`;
+			seg.style.backgroundSize = "cover, cover";
+			seg.style.backgroundPosition = "center, center";
+		});
 
 		let currentRotation = 0;
 		let spinning = false;
 
-		form.addEventListener( "input", () => {
-			btn.disabled = !form.checkValidity();
-		} );
+		form.addEventListener("input", () => {
+			btn.disabled = spinning || !form.checkValidity();
+			if (msg.classList.contains("state-error")) {
+				setMessage("");
+			}
+		});
 
-		form.addEventListener( "submit", async ( e ) => {
+		form.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			if ( spinning ) return;
+			if (spinning) return;
 
 			spinning = true;
 			btn.disabled = true;
-			msg.textContent = "Spinning...";
+			btn.textContent = "SPINNING...";
+			setMessage("Spinning...", "info");
 
 			try {
-				const data = new FormData( form );
-				data.append( "action", "spin_wheel" );
+				const data = new FormData(form);
+				data.append("action", "spin_wheel");
 
-				const res = await fetch( "/wp-admin/admin-ajax.php", {
+				const res = await fetch("/wp-admin/admin-ajax.php", {
 					method: "POST",
 					body: data
-				} );
+				});
 
 				const json = await res.json();
 
-				if ( !json.success ) {
-					msg.textContent = json.data?.message || "Something went wrong";
+				if (!json.success) {
+					setMessage(json.data?.message || "Something went wrong", "error");
 					spinning = false;
 					btn.disabled = false;
+					btn.textContent = "SPIN NOW";
 					return;
 				}
 
 				const indexMap = {
-					"Better Luck Next Time": 0, // TOP
-					"₹500 Voucher": 1, // RIGHT
-					"Better Luck Next Time": 2, // BOTTOM
-					"₹1000 Voucher": 3 // LEFT
-
+					voucher_1000: [3],
+					voucher_500: [1],
+					blnt: [0, 2]
 				};
 
-				const index = indexMap[ json.data.result_label ] ?? 3;
+				const resultKey = json?.data?.result_key;
+				const possibleIndexes = indexMap[resultKey] || [3];
+				const index = possibleIndexes[Math.floor(Math.random() * possibleIndexes.length)];
 				const SEGMENT_ANGLE = 90;
 				const SEGMENT_CENTER = 45;
-				const POINTER_ANGLE = -45; // pointer faces RIGHT
+				const POINTER_ANGLE = -45;
 				const spins = 8;
 
-				const targetRotation = currentRotation + spins * 360 + ( 360 - ( index * SEGMENT_ANGLE + SEGMENT_CENTER ) + POINTER_ANGLE );
-
+				const targetRotation = currentRotation + spins * 360 + (360 - (index * SEGMENT_ANGLE + SEGMENT_CENTER) + POINTER_ANGLE);
 
 				wheel.style.transition = "transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)";
 				wheel.style.transform = `rotate(${targetRotation}deg)`;
 
-				setTimeout( () => {
-					msg.innerHTML = `<strong>Result:</strong> ${json.data.result_label}`;
+				setTimeout(() => {
+					setMessage(`<strong>Result:</strong> ${json.data.result_label}`, "success");
+					btn.textContent = "SPIN COMPLETE";
+					currentRotation = targetRotation % 360;
 					spinning = false;
-				}, 3000 );
+				}, 3000);
 
-			} catch ( err ) {
-				console.error( err );
-				msg.textContent = "Network error";
+			} catch (err) {
+				console.error(err);
+				setMessage("Network error", "error");
 				spinning = false;
 				btn.disabled = false;
+				btn.textContent = "SPIN NOW";
 			}
-		} );
+		});
 
-	} );
-
+	});
 </script>
