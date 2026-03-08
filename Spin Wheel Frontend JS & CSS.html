@@ -91,7 +91,7 @@
   .spin-wheel-clacker {
     position: absolute;
     top: 50%;
-    right: 0;
+    right: 8%;
     left: auto;
     transform: translate(100%, -50%) rotate(180deg);
     z-index: 40;
@@ -723,14 +723,14 @@
     }
 
     .spin-wheel-clacker {
-      right: 0;
+      right: 8%;
       left: auto;
     }
   }
 
   @media (max-width: 560px) {
     .spin-wheel-clacker {
-      right: 0;
+      right: 8%;
       left: auto;
     }
 
@@ -797,7 +797,19 @@
     const modalText = document.getElementById("spin-result-text");
     const modalClose = document.getElementById("spin-result-close");
 
-    if (!wheel || !form || !btn || !btnLabel || !errorBox || !errorText || !modal || !modalGift || !modalTitle || !modalText || !modalClose) {
+    if (
+      !wheel ||
+      !form ||
+      !btn ||
+      !btnLabel ||
+      !errorBox ||
+      !errorText ||
+      !modal ||
+      !modalGift ||
+      !modalTitle ||
+      !modalText ||
+      !modalClose
+    ) {
       console.error("Spin wheel UI elements are missing.");
       return;
     }
@@ -810,7 +822,13 @@
       consent: form.querySelector('input[name="consent"]'),
     };
 
-    if (!fields.name || !fields.email || !fields.mobile || !fields.location || !fields.consent) {
+    if (
+      !fields.name ||
+      !fields.email ||
+      !fields.mobile ||
+      !fields.location ||
+      !fields.consent
+    ) {
       console.error("Form fields are missing.");
       return;
     }
@@ -819,19 +837,23 @@
 
     const WHEEL_SEGMENTS = [
       {
-        image: "https://tools.codezyners.in/wp-content/uploads/2025/12/red.webp",
+        image:
+          "https://tools.codezyners.in/wp-content/uploads/2025/12/red.webp",
         fallback: "linear-gradient(145deg, #ef4444 0%, #be123c 100%)",
       },
       {
-        image: "https://tools.codezyners.in/wp-content/uploads/2025/12/green.webp",
+        image:
+          "https://tools.codezyners.in/wp-content/uploads/2025/12/green.webp",
         fallback: "linear-gradient(145deg, #22c55e 0%, #15803d 100%)",
       },
       {
-        image: "https://tools.codezyners.in/wp-content/uploads/2025/12/blue.webp",
+        image:
+          "https://tools.codezyners.in/wp-content/uploads/2025/12/blue.webp",
         fallback: "linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%)",
       },
       {
-        image: "https://tools.codezyners.in/wp-content/uploads/2025/12/gray.webp",
+        image:
+          "https://tools.codezyners.in/wp-content/uploads/2025/12/gray.webp",
         fallback: "linear-gradient(145deg, #9ca3af 0%, #4b5563 100%)",
       },
     ];
@@ -961,11 +983,13 @@
         const resultKey = json?.data?.result_key;
         const resultLabel = json?.data?.result_label || "";
         const possibleIndexes = indexMap[resultKey] || [1];
-        const winningIndex = possibleIndexes[Math.floor(Math.random() * possibleIndexes.length)];
+        const winningIndex =
+          possibleIndexes[Math.floor(Math.random() * possibleIndexes.length)];
 
         const pointerAngle = 0;
         const targetSegmentCenter = winningIndex * 90;
-        const currentSegmentAngle = (currentRotation + targetSegmentCenter) % 360;
+        const currentSegmentAngle =
+          (currentRotation + targetSegmentCenter) % 360;
         const alignDelta = (pointerAngle - currentSegmentAngle + 360) % 360;
 
         const spins = 2880;
@@ -980,7 +1004,8 @@
           currentRotation = newRotation % 360;
 
           const firstName = fields.name.value.trim().split(/\s+/)[0] || "there";
-          const isVoucher = resultKey === "voucher_1000" || resultKey === "voucher_500";
+          const isVoucher =
+            resultKey === "voucher_1000" || resultKey === "voucher_500";
 
           const resultText = isVoucher
             ? resultLabel.toUpperCase()
