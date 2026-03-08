@@ -1,0 +1,504 @@
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+	/* =========================
+   GLOBAL
+========================= */
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+	}
+
+	header,
+	footer {
+		display: none !important;
+	}
+
+	body {
+		font-family: 'Inter', sans-serif;
+		background: linear-gradient(135deg,
+				rgba(139, 0, 81, 0.12) 0%,
+				rgba(120, 13, 98, 0.12) 100%);
+	}
+
+	/* Elementor fixes */
+	.elementor-section {
+		padding-top: 0 !important;
+		padding-bottom: 0 !important;
+	}
+
+	.elementor-shortcode,
+	.elementor-widget-container {
+		display: flex;
+		justify-content: center;
+	}
+
+	/* =========================
+   APP WRAPPER
+========================= */
+	#spin-wheel-app {
+		max-width: 1440px;
+		min-height: 90vh;
+		margin: 0 auto;
+		padding: 3rem 2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 60px;
+		flex-wrap: wrap;
+	}
+
+	/* =========================
+   WHEEL CONTAINER
+========================= */
+	.spin-wheel-container {
+		position: relative;
+		width: 500px;
+		height: 500px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* =========================
+   GOLD RING (STATIC)
+========================= */
+	.gold-ring {
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: linear-gradient(135deg,
+				#f6e27a 0%,
+				#e6b65c 25%,
+				#cfa445 50%,
+				#f6e27a 75%,
+				#b88a2b 100%);
+		box-shadow:
+			0 0 14px rgba(255, 215, 120, 0.9),
+			inset 0 0 10px rgba(255, 255, 255, 0.45);
+		z-index: 1;
+	}
+
+	/* =========================
+   ROTATING WHEEL (JS CONTROLS ROTATION)
+========================= */
+	#spin-wheel-image {
+		position: absolute;
+		inset: 15px;
+		border-radius: 50%;
+		overflow: hidden;
+		z-index: 2;
+
+		/* 🔥 critical */
+		transform-origin: 50% 50%;
+		will-change: transform;
+
+		/* ❌ do NOT animate here */
+		transition: none;
+	}
+
+	/* Center cap */
+	#spin-wheel-image::after {
+		content: "";
+		position: absolute;
+		inset: 46%;
+		border-radius: 50%;
+		background: radial-gradient(circle, #f6e27a, #b88a2b);
+		z-index: 6;
+	}
+
+	/* =========================
+   WHEEL SEGMENTS
+========================= */
+	.wheel-segment {
+		position: absolute;
+		inset: 0;
+		background-size: cover;
+		background-position: center;
+		clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+		transform-origin: 50% 50%;
+	}
+
+	.seg-0 {
+		transform: rotate(0deg);
+	}
+
+	.seg-1 {
+		transform: rotate(90deg);
+	}
+
+	.seg-2 {
+		transform: rotate(180deg);
+	}
+
+	.seg-3 {
+		transform: rotate(270deg);
+	}
+
+	/* =========================
+   SEGMENT TEXT
+========================= */
+	.segment-text {
+		position: absolute;
+		top: 50%;
+		left: 80%;
+		width: 160px;
+		transform: translate(-50%, -50%);
+		color: #fff;
+		font-weight: 700;
+		font-size: 18px;
+		line-height: 1.2;
+		text-align: center;
+		text-transform: uppercase;
+		text-shadow:
+			0 2px 4px rgba(0, 0, 0, 0.6),
+			0 0 8px rgba(0, 0, 0, 0.3);
+		pointer-events: none;
+		white-space: nowrap;
+	}
+
+	.seg-0 .segment-text {
+		transform: translate(-50%, -70%) rotate(0deg);
+	}
+
+	.seg-1 .segment-text {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
+
+	.seg-2 .segment-text {
+		transform: translate(-50%, -30%) rotate(0deg);
+	}
+
+	.seg-3 .segment-text {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+
+	/* =========================
+   CENTER POINTER (STATIC @ 3 O’CLOCK)
+========================= */
+	.wheel-pointer {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 48px;
+		height: 48px;
+		transform: translate(-50%, -50%);
+		z-index: 10;
+		pointer-events: none;
+	}
+
+	/* center knob */
+	.wheel-pointer::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: radial-gradient(circle at 30% 30%, #fff3a0, #cfa445);
+		box-shadow:
+			0 4px 8px rgba(0, 0, 0, .4),
+			inset 0 2px 4px rgba(255, 255, 255, .6);
+		z-index: 2;
+	}
+
+	/* pointer arm */
+	.pointer-arm {
+		position: absolute;
+		top: 50%;
+		left: 55%;
+		transform: translateY(-50%);
+		width: 0;
+		height: 0;
+		border-top: 14px solid transparent;
+		border-bottom: 14px solid transparent;
+		border-left: 48px solid #e6b65c;
+		filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .35));
+		z-index: 1;
+	}
+
+	/* =========================
+   FORM
+========================= */
+	.spin-wheel-form {
+		background: linear-gradient(135deg, #891c56 0%, #780D62 100%);
+		border-radius: 16px;
+		padding: 3rem 2.5rem;
+		width: 100%;
+		max-width: 450px;
+		color: #fff;
+	}
+
+	/* Inputs */
+	#spin-wheel-form input {
+		width: 100%;
+		padding: 30px 18px;
+		margin-bottom: 18px;
+		font-size: 15px;
+		border-radius: 8px;
+		border: none;
+		background: #ffffff;
+		color: #333;
+	}
+
+	#spin-wheel-form input::placeholder {
+		color: #777;
+	}
+
+	#spin-wheel-form input:focus {
+		outline: none;
+	}
+
+	/* Checkbox */
+	#spin-wheel-form input[type="checkbox"] {
+		width: 5%;
+		padding: 0;
+		margin: 0;
+	}
+
+	#spin-wheel-form span {
+		font-size: 0.75rem;
+		font-weight: 400;
+		color: #fff;
+		width: 90%;
+	}
+
+	.spin-wheel-consent {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		font-size: 12px;
+		color: #d1d5db;
+		margin: 18px 0 26px;
+	}
+
+	/* Button */
+	#spin-wheel-btn {
+		width: 100%;
+		padding: 18px;
+		font-size: 18px;
+		font-weight: 700;
+		text-transform: uppercase;
+		border-radius: 8px;
+		border: none;
+		background: #eab308;
+		color: #000;
+		cursor: pointer;
+	}
+
+	#spin-wheel-btn:disabled {
+		background: #aaa;
+		color: #444;
+		cursor: not-allowed;
+	}
+
+	/* Message */
+	#spin-wheel-message {
+		margin-top: 16px;
+		font-weight: 600;
+	}
+
+	/* =========================
+   RESPONSIVE LAYOUT
+========================= */
+
+	/* -------- Tablets (≤ 1024px) -------- */
+	@media (max-width: 1024px) {
+
+		#spin-wheel-app {
+			gap: 40px;
+			padding: 2rem 1.5rem;
+		}
+
+		.spin-wheel-container {
+			width: 420px;
+			height: 420px;
+		}
+
+		#spin-wheel-image {
+			inset: 12px;
+		}
+
+		.segment-text {
+			font-size: 16px;
+			width: 140px;
+		}
+
+		.spin-wheel-form {
+			padding: 2.5rem 2rem;
+		}
+	}
+
+	/* -------- Mobile (≤ 768px) -------- */
+	@media (max-width: 768px) {
+
+		/* 🔥 FORM FIRST, WHEEL SECOND */
+		#spin-wheel-app {
+			flex-direction: column-reverse;
+			gap: 32px;
+			padding: 2rem 1rem;
+		}
+
+		/* Wheel scaling */
+		.spin-wheel-container {
+			width: 380px;
+			height: 380px;
+		}
+
+		#spin-wheel-image {
+			inset: 10px;
+		}
+
+		.gold-ring {
+			inset: 0;
+		}
+
+		/* Text scaling */
+		.segment-text {
+			font-size: 14px;
+			width: 120px;
+			left: 78%;
+		}
+
+		/* Pointer scaling */
+		.wheel-pointer {
+			width: 40px;
+			height: 40px;
+		}
+
+		.pointer-arm {
+			border-left-width: 36px;
+			border-top-width: 12px;
+			border-bottom-width: 12px;
+		}
+
+		/* Form full-width */
+		.spin-wheel-form {
+			width: 100%;
+			max-width: 100%;
+			padding: 2.2rem 1.5rem;
+		}
+
+		#spin-wheel-form input {
+			padding: 22px 16px;
+		}
+
+		#spin-wheel-btn {
+			padding: 16px;
+			font-size: 16px;
+		}
+	}
+
+	/* -------- Small Phones (≤ 480px) -------- */
+	@media (max-width: 480px) {
+
+		.spin-wheel-container {
+			width: 320px;
+			height: 320px;
+		}
+
+		.segment-text {
+			font-size: 13px;
+			width: 110px;
+		}
+
+		.pointer-arm {
+			border-left-width: 32px;
+		}
+	}
+
+</style>
+<script>
+	document.addEventListener( "DOMContentLoaded", () => {
+
+		const wheel = document.getElementById( "spin-wheel-image" ); // ONLY this rotates
+		const form = document.getElementById( "spin-wheel-form" );
+		const btn = document.getElementById( "spin-wheel-btn" );
+		const msg = document.getElementById( "spin-wheel-message" );
+
+		if ( !wheel || !form || !btn || !msg ) {
+			console.error( "Wheel elements missing" );
+			return;
+		}
+
+		const segments = wheel.querySelectorAll( ".wheel-segment" );
+ 
+		const WHEEL_IMAGES = [
+			"https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-red.webp",
+			"https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-blue.webp",
+			"https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-gray.webp",
+			"https://chocolate-nightingale-996191.hostingersite.com/wp-content/uploads/2025/12/new-green.webp"
+		];
+
+		segments.forEach( ( seg, i ) => {
+			seg.style.backgroundImage = `url(${WHEEL_IMAGES[i]})`;
+		} );
+
+		let currentRotation = 0;
+		let spinning = false;
+
+		form.addEventListener( "input", () => {
+			btn.disabled = !form.checkValidity();
+		} );
+
+		form.addEventListener( "submit", async ( e ) => {
+			e.preventDefault();
+			if ( spinning ) return;
+
+			spinning = true;
+			btn.disabled = true;
+			msg.textContent = "Spinning...";
+
+			try {
+				const data = new FormData( form );
+				data.append( "action", "spin_wheel" );
+
+				const res = await fetch( "/wp-admin/admin-ajax.php", {
+					method: "POST",
+					body: data
+				} );
+
+				const json = await res.json();
+
+				if ( !json.success ) {
+					msg.textContent = json.data?.message || "Something went wrong";
+					spinning = false;
+					btn.disabled = false;
+					return;
+				}
+
+				const indexMap = {
+					"Better Luck Next Time": 0, // TOP
+					"₹500 Voucher": 1, // RIGHT
+					"Better Luck Next Time": 2, // BOTTOM
+					"₹1000 Voucher": 3 // LEFT
+
+				};
+
+				const index = indexMap[ json.data.result_label ] ?? 3;
+				const SEGMENT_ANGLE = 90;
+				const SEGMENT_CENTER = 45;
+				const POINTER_ANGLE = -45; // pointer faces RIGHT
+				const spins = 8;
+
+				const targetRotation = currentRotation + spins * 360 + ( 360 - ( index * SEGMENT_ANGLE + SEGMENT_CENTER ) + POINTER_ANGLE );
+
+
+				wheel.style.transition = "transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)";
+				wheel.style.transform = `rotate(${targetRotation}deg)`;
+
+				setTimeout( () => {
+					msg.innerHTML = `<strong>Result:</strong> ${json.data.result_label}`;
+					spinning = false;
+				}, 3000 );
+
+			} catch ( err ) {
+				console.error( err );
+				msg.textContent = "Network error";
+				spinning = false;
+				btn.disabled = false;
+			}
+		} );
+
+	} );
+
+</script>
