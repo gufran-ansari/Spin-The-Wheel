@@ -46,7 +46,8 @@
 	#spin-wheel-app {
 		width: min(1180px, 100%);
 		margin: 0 auto;
-		min-height: 90vh;
+		height: 100vh;
+		max-height: 100vh;
 		padding: clamp(1.25rem, 2.8vw, 3rem);
 		display: grid;
 		grid-template-columns: minmax(300px, 560px) minmax(320px, 500px);
@@ -54,12 +55,14 @@
 		justify-content: center;
 		gap: clamp(1.5rem, 3vw, 4rem);
 		position: relative;
+		box-sizing: border-box;
+		overflow: hidden;
 	}
 
 	.spin-wheel-container {
 		position: relative;
-		width: min(72vw, 520px);
-		height: min(72vw, 520px);
+		width: min(72vw, 46vh, 520px);
+		height: min(72vw, 46vh, 520px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -468,6 +471,9 @@
 			grid-template-columns: 1fr;
 			justify-items: center;
 			gap: 2.2rem;
+			height: auto;
+			max-height: none;
+			overflow: visible;
 		}
 
 		.spin-wheel-form {
@@ -479,8 +485,11 @@
 		#spin-wheel-app {
 			display: flex;
 			flex-direction: column-reverse;
-			gap: 1.8rem;
-			padding: 1.35rem 0.95rem 2rem;
+			gap: 1.2rem;
+			padding: 1rem 0.9rem 0.6rem;
+			min-height: auto;
+			height: auto;
+			max-height: none;
 		}
 
 		.spin-wheel-container {
