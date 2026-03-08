@@ -7,15 +7,12 @@ add_shortcode('spin_wheel', function () {
         <div class="spin-shell">
             <div class="spin-wheel-column">
                 <div class="spin-wheel-stage">
-                    <div class="spin-wheel-ring" aria-hidden="true"></div>
-
                     <div class="spin-wheel-clacker" aria-hidden="true">
                         <div class="spin-wheel-clacker-tip"></div>
                         <div class="spin-wheel-clacker-dot"></div>
                     </div>
 
                     <div class="spin-wheel-container">
-                        <div class="wheel-glow" aria-hidden="true"></div>
                         <div class="gold-ring"></div>
 
                         <div id="spin-wheel-wheel" aria-label="Spin wheel">
